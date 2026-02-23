@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+body {
+  @apply bg-gray-50 antialiased; /* antialiased makes medical text easier to read */
+}
+
+/* Unified Professional Scrollbar */
+.custom-scrollbar {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+  -webkit-overflow-scrolling: touch;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  border: 2px solid #f8fafc; /* Adds a "padding" effect inside the track */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Fix for table header sticking */
+.custom-scrollbar thead th {
+  background-color: #f1f5f9; /* Matches slate-100 */
+}
+
+/* Hide any scrollbars that appear inside table cells */
+td input,
+td select {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+td input::-webkit-scrollbar,
+td select::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Ensure the table cell itself doesn't scroll */
+td {
+  overflow: hidden !important;
+  white-space: nowrap;
+}
+
+/* Lock row height to prevent internal scrollbars */
+.batch-registry-table tr {
+  height: 45px; /* Adjust based on your preference */
+}
+
+.batch-registry-table td {
+  height: 45px;
+  overflow: hidden; /* This is the "Fit" secret */
+  padding: 0 !important; /* Let the input handle the padding */
+}
+
+.batch-registry-table input,
+.batch-registry-table select {
+  height: 100%;
+  width: 100%;
+  border: none;
+  margin: 0;
+}
+
+/* target the specific cell in the batch registry */
+.batch-registry-table td {
+  height: 48px; /* Set a consistent height */
+  padding: 0;
+  overflow: hidden !important; /* Force hide the scrollbar */
+  vertical-align: middle;
+}
+
+/* Ensure buttons/emojis in the tools column don't trigger overflow */
+.tools-cell-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  line-height: 1; /* Prevents emojis from expanding the line height */
+}
+
+.tools-cell-wrapper button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  font-size: 1.2rem; /* Control the emoji size exactly */
+}
+
+/* Custom styling for the Signature Cropper Area */
+.signature-crop-area {
+  border: 2px dashed #64748b !important; /* Slate-500 dashed border */
+  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.65) !important; /* Darker dimming effect */
+  background: transparent;
+}
+
+/* Optional: Add a subtle horizontal line in the middle to mimic a signature pad */
+.signature-crop-area::after {
+  content: "";
+  position: absolute;
+  bottom: 25%;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background-color: rgba(100, 116, 139, 0.3);
+  pointer-events: none;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
