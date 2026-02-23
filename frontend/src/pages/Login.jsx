@@ -1,18 +1,22 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api";
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, UserRound, Lock, ShieldCheck } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 
 function Login({ setUser }) {
+  const location = useLocation();
   const [form, setForm] = useState({
-    username: "",
+    // Use the passed username if it exists, otherwise empty
+    username: location.state?.registeredUsername || "",
     password: "",
   });
   const [validationErrors, setValidationErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [focusedField, setFocusedField] = useState(null);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const handleFormChange = (e) => {
     setValidationErrors((prev) => ({ ...prev, [e.target.name]: null }));
@@ -21,6 +25,8 @@ function Login({ setUser }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Basic validation check
     const errors = {};
     if (!form.username) errors.username = "Required";
     if (!form.password) errors.password = "Required";
@@ -31,8 +37,11 @@ function Login({ setUser }) {
       return;
     }
 
+    // START LOADING
+    setIsAuthenticating(true);
+
     try {
-      const res = await axios.post("/api/auth/login", form);
+      const res = await api.post("/api/auth/login", form);
       setUser(res.data.user);
       toast.success("Identity Verified");
       navigate("/");
@@ -41,6 +50,9 @@ function Login({ setUser }) {
       toast.error(
         err.response?.data?.message || "Invalid Registry Credentials",
       );
+    } finally {
+      // STOP LOADING (whether success or fail)
+      setIsAuthenticating(false);
     }
   };
 
@@ -154,9 +166,21 @@ function Login({ setUser }) {
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full bg-[#1A365D] hover:bg-[#006666] text-white py-4 rounded font-black text-[12px] uppercase tracking-[0.2em] transition-all shadow-md active:scale-[0.98]"
+              disabled={isAuthenticating} // Disable to prevent double-clicks
+              className={`w-full flex items-center justify-center gap-3 py-4 rounded font-black text-[12px] uppercase tracking-[0.2em] transition-all shadow-md active:scale-[0.98] ${
+                isAuthenticating
+                  ? "bg-slate-400 cursor-wait"
+                  : "bg-[#1A365D] hover:bg-[#006666] text-white"
+              }`}
             >
-              Authenticate Identity
+              {isAuthenticating ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Verifying...</span>
+                </>
+              ) : (
+                "Authenticate Identity"
+              )}
             </button>
           </div>
 

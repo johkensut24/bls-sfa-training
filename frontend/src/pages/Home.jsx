@@ -13,13 +13,14 @@ import { BatchIDPDF } from "../components/BatchIDPDF";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import ManualCropperModal from "../components/ManualCropperModal";
+import api from "../api";
 
 // ============================================================================
 // CONSTANTS
 // ============================================================================
 
-const API_URL = "api/auth/certificates";
-const SETTINGS_API_URL = "/api/auth/settings";
+const CERT_PATH = "/api/auth/certificates";
+const SETTINGS_PATH = "/api/auth/settings";
 
 const TRAINING_TYPES = [
   { value: "", label: "SELECT..." },
@@ -600,7 +601,8 @@ function Home({ user, currentView, setCurrentView }) {
 
   const fetchCerts = useCallback(async () => {
     try {
-      const res = await axios.get(API_URL);
+      // Changed axios.get(API_URL) to api.get(CERT_PATH)
+      const res = await api.get(CERT_PATH);
       setList(res.data);
     } catch (err) {
       console.error("Error fetching certificates:", err);
@@ -610,7 +612,8 @@ function Home({ user, currentView, setCurrentView }) {
 
   const fetchSettings = useCallback(async () => {
     try {
-      const response = await axios.get(SETTINGS_API_URL);
+      // Changed axios.get(SETTINGS_API_URL) to api.get(SETTINGS_PATH)
+      const response = await api.get(SETTINGS_PATH);
       if (response.data) {
         setSettings(response.data);
       }
@@ -624,11 +627,12 @@ function Home({ user, currentView, setCurrentView }) {
 
   const handleCroppedImage = useCallback(
     (base64Image) => {
-      setSettings({ ...settings, off1_sig: base64Image });
+      const key = `off${activeOfficerNum}_sig`; // Dynamically target off1_sig, off2_sig, etc.
+      setSettings((prev) => ({ ...prev, [key]: base64Image }));
       setImageToCrop(null);
-      toast.success("Signature cropped successfully!");
+      toast.success(`Officer ${activeOfficerNum} signature updated!`);
     },
-    [settings],
+    [activeOfficerNum],
   );
 
   const saveSettingsToDB = useCallback(async () => {
@@ -636,19 +640,14 @@ function Home({ user, currentView, setCurrentView }) {
     const loadingToast = toast.loading("Syncing with database...");
 
     try {
-      await axios.post(SETTINGS_API_URL, settings, {
-        withCredentials: true,
-      });
+      // Using 'api' automatically includes withCredentials and the correct Port/URL
+      await api.post(SETTINGS_PATH, settings);
 
       toast.success("Database synchronized successfully!", {
         id: loadingToast,
       });
     } catch (err) {
-      console.error("Save Error:", err);
-      toast.error(
-        err.response?.data?.message || "Unauthorized: Please log in again.",
-        { id: loadingToast },
-      );
+      toast.error("Save failed", { id: loadingToast });
     } finally {
       setIsSaving(false);
     }
@@ -710,8 +709,9 @@ function Home({ user, currentView, setCurrentView }) {
   }, [list, searchTerm]);
 
   const uniqueTrainingDates = useMemo(() => {
-    // We map the 'training_date' field instead of 'training_type'
-    return [...new Set(list.map((c) => c.training_date))].length;
+    // Filters out nulls/undefined and counts unique date strings
+    const dates = list.map((c) => c.training_date).filter(Boolean);
+    return [...new Set(dates)].length;
   }, [list]);
 
   const draftParticipantsCount = useMemo(() => {
@@ -810,7 +810,7 @@ function Home({ user, currentView, setCurrentView }) {
         dataToSave.map((row) => {
           // Remove tempId before sending to API
           const { tempId, ...rowData } = row;
-          return axios.post(API_URL, rowData);
+          return axios.post(CERT_PATH, rowData);
         }),
       );
 
@@ -903,7 +903,7 @@ function Home({ user, currentView, setCurrentView }) {
         const loadingToast = toast.loading("Updating record...");
 
         // 1. Send the update to the server
-        await axios.put(`${API_URL}/${editForm.id}`, editForm);
+        await axios.put(`${CERT_PATH}/${editForm.id}`, editForm);
 
         // 2. MANUALLY UPDATE THE LIST STATE (Registry Table)
         setList((prevList) =>
@@ -944,7 +944,7 @@ function Home({ user, currentView, setCurrentView }) {
   const handleDelete = useCallback(async () => {
     if (window.confirm("Permanently delete this record?")) {
       try {
-        await axios.delete(`${API_URL}/${editForm.id}`);
+        await axios.delete(`${CERT_PATH}/${editForm.id}`);
         toast.success("Record deleted");
 
         // 1. Close the Edit Form

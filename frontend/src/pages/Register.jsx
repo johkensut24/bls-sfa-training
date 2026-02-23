@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, UserRound, Lock, UserPlus } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
@@ -14,6 +14,7 @@ function Register({ setUser }) {
   const [validationErrors, setValidationErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
 
   const handleFormChange = (e) => {
@@ -29,6 +30,7 @@ function Register({ setUser }) {
     if (form.password !== form.confirmPassword) {
       errors.confirmPassword = "Mismatch";
       toast.error("Security Check: Passwords do not match.");
+      setValidationErrors(errors);
       return;
     }
 
@@ -37,12 +39,13 @@ function Register({ setUser }) {
       return;
     }
 
+    setIsRegistering(true); // START LOADING
+
     try {
       const { confirmPassword, ...dataToSubmit } = form;
-      const res = await axios.post("/api/auth/register", dataToSubmit);
-      setUser(res.data.user);
-      toast.success("Account Registered in Database");
-      navigate("/");
+      const res = await api.post("/api/auth/register", dataToSubmit);
+      toast.success("Account Created. Please sign in to verify identity.");
+      navigate("/login", { state: { registeredUsername: form.username } });
     } catch (err) {
       setValidationErrors({
         username: true,
@@ -50,6 +53,8 @@ function Register({ setUser }) {
         confirmPassword: true,
       });
       toast.error(err.response?.data?.message || "Registry submission failed.");
+    } finally {
+      setIsRegistering(false);
     }
   };
 
@@ -182,15 +187,28 @@ function Register({ setUser }) {
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full bg-[#006666] hover:bg-[#004d4d] text-white py-4 rounded font-black text-[12px] uppercase tracking-[0.2em] transition-all shadow-md active:scale-[0.98]"
+              disabled={isRegistering} // 4. Disable while loading
+              className={`w-full flex items-center justify-center gap-3 py-4 rounded font-black text-[12px] uppercase tracking-[0.2em] transition-all shadow-md active:scale-[0.98] ${
+                isRegistering
+                  ? "bg-slate-400 cursor-wait text-white"
+                  : "bg-[#006666] hover:bg-[#004d4d] text-white"
+              }`}
             >
-              Confirm Enrollment
+              {isRegistering ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Processing...</span>
+                </>
+              ) : (
+                "Confirm Enrollment"
+              )}
             </button>
           </div>
 
           <div className="text-center pt-2">
             <button
               type="button"
+              disabled={isRegistering} // Prevent leaving while submitting
               onClick={() => navigate("/login")}
               className="text-[10px] font-black text-[#1A365D] uppercase tracking-widest hover:underline"
             >

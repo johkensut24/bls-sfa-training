@@ -9,10 +9,8 @@ import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import axios from "axios";
 import NotFound from "./components/NotFound";
-
-axios.defaults.withCredentials = true;
+import api from "./api"; // Use your custom instance
 
 function App() {
   const [user, setUser] = useState(null);
@@ -23,9 +21,11 @@ function App() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get("/api/auth/me");
+        // 'api' already has the BaseURL and withCredentials
+        const res = await api.get("/api/auth/me");
         setUser(res.data);
       } catch (err) {
+        // If 401 (Unauthorized), we just keep user as null
         setUser(null);
       } finally {
         setLoading(false);
@@ -57,11 +57,10 @@ function App() {
                 user={user}
                 setUser={setUser}
               >
-                {/* THIS IS THE 'children' PROP */}
                 <Home
                   user={user}
                   currentView={currentView}
-                  setCurrentView={setCurrentView} // Allows Home to switch views (e.g. after submit)
+                  setCurrentView={setCurrentView}
                   isCollapsed={isCollapsed}
                 />
               </Layout>

@@ -12,9 +12,9 @@ const router = express.Router();
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  sameSite: "Strict",
-  secure: process.env.NODE_ENV === "production",
-  maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+  sameSite: "none",
+  secure: true,
+  maxAge: 30 * 24 * 60 * 60 * 1000,
 };
 
 const PASSWORD_MIN_LENGTH = 8;
@@ -331,8 +331,14 @@ router.get("/me", protect, async (req, res) => {
  */
 router.post("/logout", (req, res) => {
   try {
-    res.cookie("token", "", { ...COOKIE_OPTIONS, maxAge: 1 });
-    return res.json({ message: "Logged out successfully" });
+    // clearCookie is more readable and handles the expiration for you
+    res.clearCookie("token", {
+      ...COOKIE_OPTIONS,
+      // Ensure we remove maxAge/expires from the options spread
+      // so clearCookie can set its own 'expired' timestamp
+    });
+
+    return res.status(200).json({ message: "Identity De-authorized" });
   } catch (err) {
     console.error("Logout error:", err);
     return res.status(500).json({ message: "Server error during logout" });

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 import toast, { Toaster } from "react-hot-toast";
 
 function Navbar({ user, setUser, currentView, setCurrentView }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
 
   if (!user) return null;
@@ -18,13 +19,15 @@ function Navbar({ user, setUser, currentView, setCurrentView }) {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/auth/logout");
+      await api.post("/api/auth/logout");
       setUser(null);
-      toast.success("Logged out successfully");
+      toast.success("Identity De-authorized");
       navigate("/login");
     } catch (err) {
       console.error("Logout error:", err);
-      toast.error("Could not complete logout.");
+      toast.error("Security session could not be cleared.");
+    } finally {
+      setIsLoggingOut(false); // End loading
     }
   };
 
@@ -91,14 +94,30 @@ function Navbar({ user, setUser, currentView, setCurrentView }) {
 
           <button
             onClick={handleLogout}
-            className="group flex items-center gap-2 bg-emerald-900 hover:bg-red-700 text-white px-5 py-2 rounded shadow-md transition-all duration-200"
+            disabled={isLoggingOut}
+            className={`group flex items-center gap-2 px-5 py-2 rounded shadow-md transition-all duration-200 ${
+              isLoggingOut
+                ? "bg-slate-400 cursor-wait"
+                : "bg-emerald-900 hover:bg-red-700 text-white"
+            }`}
           >
-            <span className="text-[10px] font-black uppercase tracking-widest">
-              Exit System
-            </span>
-            <span className="text-xs opacity-70 group-hover:translate-x-1 transition-transform">
-              →
-            </span>
+            {isLoggingOut ? (
+              <>
+                <div className="h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="text-[10px] font-black uppercase tracking-widest">
+                  Exiting...
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-[10px] font-black uppercase tracking-widest">
+                  Exit System
+                </span>
+                <span className="text-xs opacity-70 group-hover:translate-x-1 transition-transform">
+                  →
+                </span>
+              </>
+            )}
           </button>
         </div>
       </div>
