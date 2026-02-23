@@ -10,7 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: https://frontend-ufk5.onrender.com
+    origin: "https://frontend-ufk5.onrender.com"
   }),
 );
 app.use(express.json({ limit: "10mb" }));
