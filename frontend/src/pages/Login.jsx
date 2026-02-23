@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, UserRound, Lock, ShieldCheck } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
+import { API_URL } from "../api";
 
 function Login({ setUser }) {
   const location = useLocation();
@@ -42,6 +43,7 @@ function Login({ setUser }) {
 
     try {
       const res = await api.post("/api/auth/login", form);
+
       setUser(res.data.user);
       toast.success("Identity Verified");
       navigate("/");
