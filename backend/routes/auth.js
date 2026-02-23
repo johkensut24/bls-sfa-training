@@ -398,10 +398,12 @@ router.get("/certificates/date/:date", async (req, res) => {
  * Create a new certificate
  */
 router.post("/certificates", async (req, res) => {
+  console.log("Incoming Data:", req.body);
   try {
     // Validate certificate data
     const validation = validateCertificateData(req.body);
     if (!validation.valid) {
+      console.log("Validation Failed:", validation.errors);
       return res.status(400).json({
         message: "Validation failed",
         errors: validation.errors,
