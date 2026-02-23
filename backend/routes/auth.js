@@ -43,11 +43,9 @@ const VALID_PARTICIPANT_TYPES = ["Lay Rescuer", "Healthcare Provider"];
  */
 const generateToken = (id) => {
   if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET is not defined in environment variables");
+    throw new Error("JWT_SECRET is not defined in environment variables"); // This is where it crashes!
   }
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
-  });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
 /**
