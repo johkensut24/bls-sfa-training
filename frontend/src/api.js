@@ -1,18 +1,23 @@
 import axios from "axios";
 
-// Fallback to localhost if the environment variable is missing
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// Add the /api/auth prefix here so your components don't have to repeat it
+export const API_URL =
+  (import.meta.env.VITE_API_URL || "http://localhost:5000") + "/api/auth";
 
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
 });
 
-// Optional: Add an interceptor to help you debug errors in the console
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("API Error:", error.response?.data?.message || error.message);
+    // This will now show you EXACTLY why it failed in the browser console
+    console.error("API Error Details:", {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
+      url: error.config?.url,
+    });
     return Promise.reject(error);
   },
 );
