@@ -8,14 +8,22 @@ dotenv.config();
 
 const app = express();
 
+// UPDATED CORS CONFIGURATION
 app.use(
   cors({
-    origin: "https://frontend-ufk5.onrender.com"
-  }),
+    origin: "https://frontend-ufk5.onrender.com", // Your exact frontend URL
+    credentials: true,                           // This fixes the 'include' error
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"]
+  })
 );
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
+
+// Simple health check to verify backend is up on Render
+app.get("/", (req, res) => res.send("Server is alive"));
 
 app.use("/api/auth", authRoutes);
 
