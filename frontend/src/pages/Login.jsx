@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, UserRound, Lock, ShieldCheck } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
+import { API_URL } from "../api";
 
 function Login({ setUser }) {
   const [form, setForm] = useState({
@@ -32,7 +33,7 @@ function Login({ setUser }) {
     }
 
     try {
-      const res = await axios.post("/api/auth/login", form);
+      const res = await axios.post(`${API_URL}/api/auth/login`, form);
       setUser(res.data.user);
       toast.success("Identity Verified");
       navigate("/");
