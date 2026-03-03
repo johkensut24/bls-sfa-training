@@ -18,7 +18,7 @@ import api from "../api";
 // CONSTANTS
 // ============================================================================
 
-const CERT_PATH = "/certificates";
+const CERT_PATH = "/api/auth/certificates";
 const SETTINGS_PATH = "/api/auth/settings";
 
 const TRAINING_TYPES = [
