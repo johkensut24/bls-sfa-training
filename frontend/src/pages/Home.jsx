@@ -18,7 +18,7 @@ import api from "../api";
 // CONSTANTS
 // ============================================================================
 
-const CERT_PATH = "/api/auth/certificates";
+const CERT_PATH = "/certificates";
 const SETTINGS_PATH = "/api/auth/settings";
 
 const TRAINING_TYPES = [
@@ -794,7 +794,7 @@ function Home({ user, currentView, setCurrentView }) {
   const handleBulkSubmit = useCallback(async () => {
     try {
       const dataToSave = formRows.filter(
-        (row) => row.participant_name.trim() !== "",
+        (row) => row.participant_name && row.participant_name.trim() !== "",
       );
 
       if (dataToSave.length === 0) {
@@ -814,7 +814,13 @@ function Home({ user, currentView, setCurrentView }) {
       );
 
       const succeeded = results.filter((r) => r.status === "fulfilled").length;
-      const failed = results.filter((r) => r.status === "rejected").length;
+      const failedResults = results.filter((r) => r.status === "rejected");
+      failedResults.forEach((failure, index) => {
+        console.error(
+          `Row ${index} failed:`,
+          failure.reason?.response?.data || failure.reason.message,
+        );
+      });
 
       toast.dismiss(loadingToast);
 
