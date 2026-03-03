@@ -903,7 +903,7 @@ function Home({ user, currentView, setCurrentView }) {
         const loadingToast = toast.loading("Updating record...");
 
         // 1. Send the update to the server
-        await axios.put(`${CERT_PATH}/${editForm.id}`, editForm);
+        await api.put(`${CERT_PATH}/${editForm.id}`, editForm);
 
         // 2. MANUALLY UPDATE THE LIST STATE (Registry Table)
         setList((prevList) =>
