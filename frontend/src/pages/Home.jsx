@@ -10,7 +10,6 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { CertPDF } from "../components/CertPDF";
 import { BatchCertPDF } from "../components/BatchCertPDF";
 import { BatchIDPDF } from "../components/BatchIDPDF";
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import ManualCropperModal from "../components/ManualCropperModal";
 import api from "../api";
@@ -810,7 +809,7 @@ function Home({ user, currentView, setCurrentView }) {
         dataToSave.map((row) => {
           // Remove tempId before sending to API
           const { tempId, ...rowData } = row;
-          return axios.post(CERT_PATH, rowData);
+          return api.post(CERT_PATH, rowData);
         }),
       );
 
@@ -944,7 +943,7 @@ function Home({ user, currentView, setCurrentView }) {
   const handleDelete = useCallback(async () => {
     if (window.confirm("Permanently delete this record?")) {
       try {
-        await axios.delete(`${CERT_PATH}/${editForm.id}`);
+        await api.delete(`${CERT_PATH}/${editForm.id}`);
         toast.success("Record deleted");
 
         // 1. Close the Edit Form
