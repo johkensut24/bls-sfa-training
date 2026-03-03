@@ -1909,10 +1909,10 @@ function Home({ user, currentView, setCurrentView }) {
 
       {/* SYSTEM SETTINGS VIEW */}
       {currentView === "settings" && (
-        /* REMOVED px-4 AND ADDED w-full TO ENSURE MAXIMUM WIDTH */
-        <div className="animate-in fade-in duration-500 space-y-8 h-auto flex flex-col pb-20 w-full">
-          {/* HEADER SECTION - NO CONTENT CHANGES */}
-          <div className="flex justify-between items-center bg-white p-6 rounded-[2rem] border-b-4 border-[#006666] shadow-sm shrink-0">
+        /* Added px-4 for mobile safety, w-full for desktop */
+        <div className="animate-in fade-in duration-500 space-y-8 h-auto flex flex-col pb-20 w-full px-4 md:px-0">
+          {/* HEADER SECTION - Added flex-wrap for small screens */}
+          <div className="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2rem] border-b-4 border-[#006666] shadow-sm shrink-0 gap-4">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-[#F0F9F9] flex items-center justify-center border border-[#006666]/10">
                 <svg
@@ -1939,151 +1939,141 @@ function Home({ user, currentView, setCurrentView }) {
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 w-full md:w-auto">
               <button
                 onClick={() => setSettings({})}
-                className="px-6 py-3 bg-red-50 text-red-500 hover:bg-red-100 rounded-xl font-black text-[10px] uppercase transition-colors"
+                className="flex-1 md:flex-none px-6 py-3 bg-red-50 text-red-500 hover:bg-red-100 rounded-xl font-black text-[10px] uppercase transition-colors"
               >
                 Clear All
               </button>
               <button
                 onClick={saveSettingsToDB}
-                className="flex items-center gap-2 px-10 py-3 bg-[#006666] text-white hover:bg-[#004D4D] rounded-xl font-black text-[10px] uppercase shadow-lg shadow-[#006666]/20 transition-all active:scale-95"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-10 py-3 bg-[#006666] text-white hover:bg-[#004D4D] rounded-xl font-black text-[10px] uppercase shadow-lg shadow-[#006666]/20 transition-all active:scale-95"
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    d="M5 13l4 4L19 7"
-                    strokeWidth={3}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
                 Confirm & Save
               </button>
             </div>
           </div>
 
-          {/* GRID ADJUSTED: xl:grid-cols-12 - TABLE NOW TAKES 10 COLUMNS INSTEAD OF 8 */}
-          <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 items-start w-full">
-            {/* LEFT TABLE: Pushed to col-span-9 for extra width */}
-            <div className="xl:col-span-9 space-y-4">
-              <div className="grid grid-cols-12 px-8 mb-2">
-                <div className="col-span-1 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                  #
+          {/* MAIN CONTENT GRID - Changed to flex-col for mobile, xl:grid for desktop */}
+          <div className="flex flex-col xl:grid xl:grid-cols-12 gap-10 items-start w-full">
+            {/* LEFT TABLE: Added horizontal scroll wrapper for mobile */}
+            <div className="w-full xl:col-span-9 space-y-4 overflow-x-auto pb-4">
+              <div className="min-w-[700px] xl:min-w-0">
+                <div className="grid grid-cols-12 px-8 mb-2">
+                  <div className="col-span-1 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    #
+                  </div>
+                  <div className="col-span-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    Full Name
+                  </div>
+                  <div className="col-span-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    Designation
+                  </div>
+                  <div className="col-span-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
+                    Actions
+                  </div>
                 </div>
-                <div className="col-span-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                  Full Name
-                </div>
-                <div className="col-span-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                  Designation
-                </div>
-                <div className="col-span-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
-                  Actions
-                </div>
-              </div>
 
-              {[1, 2, 3].map((num) => (
-                <div
-                  key={num}
-                  className="grid grid-cols-12 items-center bg-white p-2 pl-8 rounded-[1.5rem] border border-slate-100 shadow-sm hover:shadow-md hover:border-[#006666]/20 transition-all group"
-                >
-                  <div className="col-span-1">
-                    <span className="text-lg font-black text-slate-200 group-hover:text-[#006666]/30 transition-colors">
-                      0{num}
-                    </span>
-                  </div>
-                  <div className="col-span-4 pr-4">
-                    <input
-                      className="w-full py-3 bg-transparent text-[15px] font-bold text-slate-700 outline-none placeholder:text-slate-300"
-                      value={settings[`off${num}_name`] || ""}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          [`off${num}_name`]: e.target.value,
-                        })
-                      }
-                      placeholder="Type name..."
-                    />
-                  </div>
-                  <div className="col-span-4 pr-4 border-l border-slate-50">
-                    <input
-                      className="w-full py-3 pl-4 bg-transparent text-[13px] font-medium text-slate-500 outline-none placeholder:text-slate-300"
-                      value={settings[`off${num}_pos`] || ""}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          [`off${num}_pos`]: e.target.value,
-                        })
-                      }
-                      placeholder="Type position..."
-                    />
-                  </div>
-                  <div className="col-span-3 flex justify-end pr-2">
-                    {num === 1 ? (
-                      <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border border-slate-100">
-                        <input
-                          type="file"
-                          id={`sig-${num}`}
-                          className="hidden"
-                          accept="image/png"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                              setActiveOfficerNum(1);
-                              const reader = new FileReader();
-                              reader.onload = () =>
-                                setImageToCrop(reader.result);
-                              reader.readAsDataURL(file);
-                            }
-                          }}
-                        />
-                        <label
-                          htmlFor={`sig-${num}`}
-                          className="px-4 py-2 bg-white text-[#006666] border border-slate-200 rounded-lg text-[10px] font-black uppercase cursor-pointer hover:bg-[#006666] hover:text-white transition-all shadow-sm"
-                        >
-                          {settings.off1_sig ? "Replace" : "Signature"}
-                        </label>
-                        {settings.off1_sig && (
-                          <button
-                            onClick={() =>
-                              setSettings({ ...settings, off1_sig: "" })
-                            }
-                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                {[1, 2, 3].map((num) => (
+                  <div
+                    key={num}
+                    className="grid grid-cols-12 items-center bg-white p-2 pl-8 rounded-[1.5rem] border border-slate-100 shadow-sm hover:shadow-md hover:border-[#006666]/20 transition-all group mb-3"
+                  >
+                    <div className="col-span-1">
+                      <span className="text-lg font-black text-slate-200 group-hover:text-[#006666]/30 transition-colors">
+                        0{num}
+                      </span>
+                    </div>
+                    <div className="col-span-4 pr-4">
+                      <input
+                        className="w-full py-3 bg-transparent text-[15px] font-bold text-slate-700 outline-none placeholder:text-slate-300"
+                        value={settings[`off${num}_name`] || ""}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            [`off${num}_name`]: e.target.value,
+                          })
+                        }
+                        placeholder="Type name..."
+                      />
+                    </div>
+                    <div className="col-span-4 pr-4 border-l border-slate-50">
+                      <input
+                        className="w-full py-3 pl-4 bg-transparent text-[13px] font-medium text-slate-500 outline-none placeholder:text-slate-300"
+                        value={settings[`off${num}_pos`] || ""}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            [`off${num}_pos`]: e.target.value,
+                          })
+                        }
+                        placeholder="Type position..."
+                      />
+                    </div>
+                    <div className="col-span-3 flex justify-end pr-2">
+                      {num === 1 ? (
+                        <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                          <input
+                            type="file"
+                            id={`sig-${num}`}
+                            className="hidden"
+                            accept="image/png"
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                setActiveOfficerNum(1);
+                                const reader = new FileReader();
+                                reader.onload = () =>
+                                  setImageToCrop(reader.result);
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor={`sig-${num}`}
+                            className="px-4 py-2 bg-white text-[#006666] border border-slate-200 rounded-lg text-[10px] font-black uppercase cursor-pointer hover:bg-[#006666] hover:text-white transition-all shadow-sm"
                           >
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
+                            {settings.off1_sig ? "Replace" : "Signature"}
+                          </label>
+                          {settings.off1_sig && (
+                            <button
+                              onClick={() =>
+                                setSettings({ ...settings, off1_sig: "" })
+                              }
+                              className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                             >
-                              <path
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                strokeWidth={2}
-                              />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="px-4 py-2 bg-slate-50 rounded-lg text-[10px] font-bold text-slate-300 uppercase tracking-tighter">
-                        Identity Text Only
-                      </div>
-                    )}
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                  strokeWidth={2}
+                                />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="px-4 py-2 bg-slate-50 rounded-lg text-[10px] font-bold text-slate-300 uppercase tracking-tighter">
+                          Identity Text Only
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            {/* RIGHT PREVIEW: Condensed to col-span-3 to make room for table */}
-            <div className="xl:col-span-3 flex justify-center">
-              <div className="sticky top-10 flex flex-col items-center">
-                <div className="scale-95 origin-top">
-                  {/* CARD CONTAINER */}
+            {/* RIGHT PREVIEW: Fully restored internal code */}
+            <div className="w-full xl:col-span-3 flex justify-center">
+              <div className="xl:sticky xl:top-10 flex flex-col items-center">
+                {/* Responsive Scale Wrapper */}
+                <div className="scale-[0.8] sm:scale-95 md:scale-100 xl:scale-95 origin-top">
+                  {/* THE CARD CONTAINER - YOUR ORIGINAL CODE BELOW */}
                   <div className="w-[320px] h-[204px] bg-white border-[1.5px] border-black p-4 flex flex-col shadow-2xl rounded-[2px] relative overflow-hidden">
                     {/* BACK HEADER */}
                     <div className="flex flex-row items-start mb-2">
@@ -2115,7 +2105,7 @@ function Home({ user, currentView, setCurrentView }) {
                       </p>
                     </div>
 
-                    {/* OFFICIALS CONTAINER - USING FIXED SLOTS TO PREVENT OVERLAP */}
+                    {/* OFFICIALS CONTAINER */}
                     <div className="mt-auto flex flex-col w-full pb-1">
                       {/* OFFICIAL 1 SLOT */}
                       <div className="h-[42px] flex flex-col items-center justify-end relative">
@@ -2157,6 +2147,7 @@ function Home({ user, currentView, setCurrentView }) {
                       </div>
                     </div>
                   </div>
+                  {/* END OF ORIGINAL CARD CODE */}
 
                   <p className="mt-4 text-[10px] text-center font-black text-slate-400 uppercase tracking-[0.2em]">
                     Live Back-Side Preview
