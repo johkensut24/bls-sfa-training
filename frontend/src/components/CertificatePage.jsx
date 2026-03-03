@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#7FB77E",
     position: "relative",
     overflow: "hidden",
-    justifyContent: "center",
     alignItems: "center",
   },
   watermarkContainer: {
@@ -49,10 +48,11 @@ const styles = StyleSheet.create({
     objectFit: "contain",
   },
   signatoryContent: {
+    position: "absolute",
+    top: 310,
     width: "100%",
     zIndex: 1,
     alignItems: "center",
-    justifyContent: "center",
     paddingHorizontal: 10,
   },
   signatoryName: {
