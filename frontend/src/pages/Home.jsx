@@ -814,13 +814,7 @@ function Home({ user, currentView, setCurrentView }) {
       );
 
       const succeeded = results.filter((r) => r.status === "fulfilled").length;
-      const failedResults = results.filter((r) => r.status === "rejected");
-      failedResults.forEach((failure, index) => {
-        console.error(
-          `Row ${index} failed:`,
-          failure.reason?.response?.data || failure.reason.message,
-        );
-      });
+      const failed = results.filter((r) => r.status === "rejected").length;
 
       toast.dismiss(loadingToast);
 
