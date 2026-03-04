@@ -1878,7 +1878,7 @@ function Home({ user, currentView, setCurrentView }) {
                         title="Duplicate this row"
                         aria-label={`Duplicate row ${index + 1}`}
                       >
-                        👯
+                        📋
                       </button>
                       <button
                         onClick={() => removeRow(index)}
